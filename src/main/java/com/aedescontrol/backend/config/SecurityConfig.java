@@ -17,6 +17,7 @@ import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -28,6 +29,11 @@ import java.util.List;
 @Configuration
 public class SecurityConfig {
 
+    @Bean
+    public JwtCookieFilter jwtCookieFilter(JwtDecoder jwtDecoder) {
+        return new JwtCookieFilter(jwtDecoder);
+    }
+
     @Value("${jwt.public.key}")
     private RSAPublicKey publicKey;
 
@@ -35,20 +41,21 @@ public class SecurityConfig {
     private RSAPrivateKey privateKey;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtCookieFilter jwtCookieFilter) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/logout").permitAll()
+                        .requestMatchers("/auth/me").authenticated()
                         .anyRequest().authenticated()
-                );
+                )
+                .addFilterBefore(jwtCookieFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
-    // CORS para aceitar cookies do frontend
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
