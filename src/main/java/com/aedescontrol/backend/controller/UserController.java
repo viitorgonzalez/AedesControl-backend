@@ -2,7 +2,9 @@ package com.aedescontrol.backend.controller;
 
 import com.aedescontrol.backend.dto.LoginRequest;
 import com.aedescontrol.backend.dto.LoginResponse;
+import com.aedescontrol.backend.model.User;
 import com.aedescontrol.backend.repository.UserRepository;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -33,30 +35,48 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
-        var user = userRepository.findByEmail(loginRequest.email());
-        System.out.println("User: " + user);
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        String hash = encoder.encode("abc12345");
-        System.out.println(hash);
+    public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+        var userOPT = userRepository.findByEmail(loginRequest.email());
+        User user = userOPT.orElseThrow(() -> new BadCredentialsException("email or password is invalid!"));
 
-
-        if (user.isEmpty() || !user.get().isLoginCorrect(loginRequest, bCryptPasswordEncoder)) {
-            throw new BadCredentialsException("user or password is invalid!");
+        if (!user.isLoginCorrect(loginRequest, bCryptPasswordEncoder)) {
+            throw new BadCredentialsException("email or password is invalid!");
         }
 
         var now = Instant.now();
-        var expiresIn = 300L;
+        var expiresIn = 300L; // 5 min
 
         var claims = JwtClaimsSet.builder()
                 .issuer("AedesControlBackend")
-                .subject(user.get().getId().toString())
-                .expiresAt(now.plusSeconds(300L))
+                .subject(user.getId().toString())
                 .issuedAt(now)
+                .expiresAt(now.plusSeconds(expiresIn))
                 .build();
 
-        var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+        String jwtToken = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
 
-        return ResponseEntity.ok(new LoginResponse(jwtValue, expiresIn));
+        var cookie = new jakarta.servlet.http.Cookie("token", jwtToken);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(false);
+        cookie.setPath("/");
+        cookie.setMaxAge((int) expiresIn);
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok().build();
     }
+
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+        var cookie = new jakarta.servlet.http.Cookie("token", null);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(false);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok().build();
+    }
+
+
 }
