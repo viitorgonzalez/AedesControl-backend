@@ -11,13 +11,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleResourceNotFound(ResourceNotFoundException ex) {
-        ErrorResponse error = new ErrorResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage());
+        ErrorResponse error = new ErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
-        ErrorResponse error = new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+        ErrorResponse error = new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
                 "Internal server error: " + ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -28,7 +28,7 @@ public class GlobalExceptionHandler {
         String value = ex.getValue() != null ? ex.getValue().toString() : "null";
         String message = "Parâmetro inválido: " + param + " = " + value;
 
-        ErrorResponse error = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), message);
+        ErrorResponse error = new ErrorResponse(HttpStatus.BAD_REQUEST, message);
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 }

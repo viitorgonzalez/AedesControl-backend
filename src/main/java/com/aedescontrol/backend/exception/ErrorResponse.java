@@ -1,13 +1,15 @@
 package com.aedescontrol.backend.exception;
 
+import org.springframework.http.HttpStatus;
+
 import java.time.LocalDateTime;
 
 public class ErrorResponse {
     private LocalDateTime timestamp;
-    private int status;
+    private HttpStatus status;
     private String error;
 
-    public ErrorResponse(int status, String error) {
+    public ErrorResponse(HttpStatus status, String error) {
         this.timestamp = LocalDateTime.now();
         this.status = status;
         this.error = error;
@@ -17,7 +19,7 @@ public class ErrorResponse {
         return timestamp;
     }
 
-    public int getStatus() {
+    public HttpStatus getStatus() {
         return status;
     }
 

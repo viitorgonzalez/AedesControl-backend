@@ -45,18 +45,19 @@ public class UserController {
             throw new BadCredentialsException("email or password is invalid!");
         }
 
-        var now = Instant.now(); var expiresIn = 300L; // 5 min
+        var now = Instant.now();
+        var expiresIn = 300L; // 5 min
         var claims = JwtClaimsSet.builder()
                 .issuer("AedesControlBackend")
                 .subject(user.getId().toString())
-                .issuedAt(now) .expiresAt(now.plusSeconds(expiresIn)) .build();
+                .issuedAt(now).expiresAt(now.plusSeconds(expiresIn)).build();
 
         String jwtToken = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
 
-        CookieService.setCookie(response, "token", jwtToken , 300);
+        CookieService.setCookie(response, "token", jwtToken, 300);
 
         return ResponseEntity.ok().build();
-         }
+    }
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response) {
