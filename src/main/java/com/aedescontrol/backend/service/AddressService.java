@@ -21,7 +21,7 @@ public class AddressService {
     }
 
     public List<Address> getAllAddresses() {
-        return addressRepository.findAll(); // to-do: paginação quando escalar
+        return addressRepository.findAll(); // to-do: Pageable
     }
 
     public Address getAddressByIdOrThrow(Long id) {
@@ -47,5 +47,3 @@ public class AddressService {
         addressRepository.delete(address);
     }
 }
-
-// controller tratar e=xcpetion com try catch e lançando

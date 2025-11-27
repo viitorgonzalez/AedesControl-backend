@@ -1,24 +1,30 @@
 package com.aedescontrol.backend.dto;
 
 import com.aedescontrol.backend.model.Address;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 
 public class CreateAddressDTO {
 
     @NotBlank
+    @Size(max = 255)
     private String street;
 
     @NotBlank
     private String city;
 
     @NotBlank
+    @Pattern(regexp = "\\d{5}-\\d{3}", message = "CEP must be in the format 12345-678")
     private String zipCode;
 
     @NotNull
     private Address.Status status;
 
+    @DecimalMin(value = "-90.0", message = "Latitude must be >= -90")
+    @DecimalMax(value = "90.0", message = "Latitude must be <= 90")
     private Double latitude;
+
+    @DecimalMin(value = "-180.0", message = "Longitude must be >= -180")
+    @DecimalMax(value = "180.0", message = "Longitude must be <= 180")
     private Double longitude;
 
     public String getCity() {
