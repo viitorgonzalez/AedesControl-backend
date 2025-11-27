@@ -55,3 +55,5 @@ dist/
 # Ignore rsa public and private keys
 src/main/resources/*.key
 src/main/resources/*.pub
+src/main/resources/application.properties
+/.env
