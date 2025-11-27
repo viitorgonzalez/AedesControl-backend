@@ -29,7 +29,6 @@ public class AddressService {
         if(addresses.isEmpty())
             throw new ResourceNotFoundException("Address not found with status " + status);
         return addresses;
-
     }
 
     public Address saveAddress(Address address) {
