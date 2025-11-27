@@ -57,3 +57,5 @@ src/main/resources/*.key
 src/main/resources/*.pub
 src/main/resources/application.properties
 !src/main/resources/application.properties.example
+
+docker-compose.yml
