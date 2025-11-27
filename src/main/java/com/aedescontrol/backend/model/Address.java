@@ -1,6 +1,9 @@
 package com.aedescontrol.backend.model;
 
+import com.aedescontrol.backend.dto.AddressDTO;
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -22,8 +25,24 @@ public class Address {
     private Double latitude;
     private Double longitude;
 
+    @Column(updatable = false)
+    @CreationTimestamp
     private LocalDateTime createdAt;
+
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    public Address() {
+    }
+
+    public Address(AddressDTO dto) {
+        this.street = dto.getStreet();
+        this.city = dto.getCity();
+        this.zipCode = dto.getZipCode();
+        this.status = dto.getStatus();
+        this.latitude = dto.getLatitude();
+        this.longitude = dto.getLongitude();
+    }
 
     public Long getId() {
         return id;
@@ -98,8 +117,6 @@ public class Address {
     }
 
     public enum Status {
-        LIVRE,
-        SUSPEITA,
-        CONFIRMADO
+        LIVRE, SUSPEITA, CONFIRMADO
     }
 }
