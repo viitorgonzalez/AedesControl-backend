@@ -56,4 +56,4 @@ dist/
 src/main/resources/*.key
 src/main/resources/*.pub
 src/main/resources/application.properties
-/.env
+!src/main/resources/application.properties.example
