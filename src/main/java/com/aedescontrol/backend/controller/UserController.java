@@ -1,7 +1,6 @@
 package com.aedescontrol.backend.controller;
 
 import com.aedescontrol.backend.dto.LoginRequest;
-import com.aedescontrol.backend.dto.LoginResponse;
 import com.aedescontrol.backend.model.User;
 import com.aedescontrol.backend.repository.UserRepository;
 import jakarta.servlet.http.HttpServletResponse;
@@ -65,7 +64,6 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response) {
         var cookie = new jakarta.servlet.http.Cookie("token", null);
@@ -77,6 +75,4 @@ public class UserController {
 
         return ResponseEntity.ok().build();
     }
-
-
 }

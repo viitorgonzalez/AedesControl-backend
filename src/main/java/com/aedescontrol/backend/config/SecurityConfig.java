@@ -48,7 +48,7 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // CORS para aceitar cookies do frontend
+    // CORS
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
