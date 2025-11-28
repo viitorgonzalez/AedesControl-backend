@@ -4,6 +4,7 @@ import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,16 +30,15 @@ import java.util.List;
 @Configuration
 public class SecurityConfig {
 
+    @Value("${jwt.public.key}")
+    private RSAPublicKey publicKey;
+    @Value("${jwt.private.key}")
+    private RSAPrivateKey privateKey;
+
     @Bean
     public JwtCookieFilter jwtCookieFilter(JwtDecoder jwtDecoder) {
         return new JwtCookieFilter(jwtDecoder);
     }
-
-    @Value("${jwt.public.key}")
-    private RSAPublicKey publicKey;
-
-    @Value("${jwt.private.key}")
-    private RSAPrivateKey privateKey;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtCookieFilter jwtCookieFilter) throws Exception {
@@ -50,6 +50,18 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/logout").permitAll()
                         .requestMatchers("/auth/me").authenticated()
                         .anyRequest().authenticated()
+                )
+                .exceptionHandling(ex -> ex
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"status\":403,\"message\":\"Acesso negado: você não tem permissão para este recurso.\"}");
+                        })
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"status\":401,\"message\":\"Não autorizado: faça login para acessar este recurso.\"}");
+                        })
                 )
                 .addFilterBefore(jwtCookieFilter, UsernamePasswordAuthenticationFilter.class);
 

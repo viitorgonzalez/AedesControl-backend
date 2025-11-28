@@ -15,21 +15,31 @@ public class Address {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "street", nullable = false, length = 255)
     private String street;
+
+    @Column(name = "city", nullable = false, length = 50)
     private String city;
+
+    @Column(name = "zipCode", nullable = false, length = 9)
     private String zipCode;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
     private Status status;
 
+    @Column(name = "latitude")
     private Double latitude;
+
+    @Column(name = "longitude")
     private Double longitude;
 
-    @Column(updatable = false)
     @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     public Address() {
@@ -46,6 +56,10 @@ public class Address {
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getStreet() {
@@ -110,10 +124,6 @@ public class Address {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public enum Status {

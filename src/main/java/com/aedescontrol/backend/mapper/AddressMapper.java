@@ -32,4 +32,15 @@ public class AddressMapper {
         dto.setLongitude(address.getLongitude());
         return dto;
     }
+
+    // update DTO -> Entity
+    public void updateEntity(Address entity, CreateAddressDTO dto) {
+        entity.setStreet(dto.getStreet());
+        entity.setCity(dto.getCity());
+        entity.setZipCode(dto.getZipCode());
+        entity.setStatus(dto.getStatus());
+        entity.setLatitude(dto.getLatitude());
+        entity.setLongitude(dto.getLongitude());
+    }
+
 }

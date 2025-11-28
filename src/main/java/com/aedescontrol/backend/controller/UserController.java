@@ -40,10 +40,10 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody @Valid LoginRequest loginRequest, HttpServletResponse response) {
         User user = userRepository.findByEmail(loginRequest.email())
-                .orElseThrow(() -> new BadCredentialsException("email or password is invalid!"));
+                .orElseThrow(() -> new BadCredentialsException("email ou senha inválida!"));
 
         if (!user.isLoginCorrect(loginRequest, bCryptPasswordEncoder)) {
-            throw new BadCredentialsException("email or password is invalid!");
+            throw new BadCredentialsException("email ou senha inválida!");
         }
 
         var now = Instant.now();
