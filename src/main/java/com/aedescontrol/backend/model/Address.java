@@ -1,6 +1,8 @@
 package com.aedescontrol.backend.model;
 
+import com.aedescontrol.backend.config.StatusDeserializer;
 import com.aedescontrol.backend.dto.AddressDTO;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -26,6 +28,7 @@ public class Address {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
+    @JsonDeserialize(using = StatusDeserializer.class)
     private Status status;
 
     @Column(name = "latitude")

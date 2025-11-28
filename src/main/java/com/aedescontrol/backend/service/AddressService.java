@@ -1,5 +1,6 @@
 package com.aedescontrol.backend.service;
 
+import com.aedescontrol.backend.dto.AddressDTO;
 import com.aedescontrol.backend.dto.CreateAddressDTO;
 import com.aedescontrol.backend.exception.ResourceNotFoundException;
 import com.aedescontrol.backend.mapper.ObjectMapper;
@@ -22,15 +23,16 @@ public class AddressService {
         this.addressRepository = addressRepository;
     }
 
-    public List<Address> getAllAddresses() {
-        return addressRepository.findAll(); // to-do: Pageable
+    public List<AddressDTO> getAllAddresses() {
+        log.debug("Finding all addresses");
+        return ObjectMapper.parseListObjects(addressRepository.findAll(), AddressDTO.class); // to-do: Pageable
     }
 
-    public Address getAddressByIdOrThrow(Long id) {
+    public AddressDTO getAddressByIdOrThrow(Long id) {
         log.debug("Procurando endereço no banco, id={}", id);
         return addressRepository.findById(id).map(address -> {
                     log.info("Endereço encontrado: {}", id);
-                    return address;
+                    return ObjectMapper.parseObject(address, AddressDTO.class);
                 })
                 .orElseThrow(() -> {
                     log.warn("Endereço não encontrado: {}", id);
@@ -39,7 +41,7 @@ public class AddressService {
 
     }
 
-    public List<Address> getAddressesByStatus(Address.Status status) {
+    public List<AddressDTO> getAddressesByStatus(Address.Status status) {
         log.debug("Procurando endereço no banco, status={}", status);
         List<Address> addresses = addressRepository.findByStatus(status);
 
@@ -49,20 +51,21 @@ public class AddressService {
         }
 
         log.debug("Foram encontrados {} endereços com status {}", addresses.size(), status);
-        return addresses;
+
+        return ObjectMapper.parseListObjects(addresses, AddressDTO.class);
     }
 
-    public Address saveAddress(CreateAddressDTO dto) {
+    public AddressDTO saveAddress(CreateAddressDTO dto) {
         log.debug("Salvando endereço: body={}", dto);
         Address address = ObjectMapper.parseObject(dto, Address.class);
         log.debug("DTO convertido para entidade: {}", address);
 
         Address saved = addressRepository.save(address);
         log.info("Endereço salvo com sucesso, id={}", saved.getId());
-        return saved;
+        return ObjectMapper.parseObject(saved, AddressDTO.class);
     }
 
-    public Address updateAddress(CreateAddressDTO dto, Long id) {
+    public AddressDTO updateAddress(CreateAddressDTO dto, Long id) {
         log.info("Atualizando endereço ID={}", id);
         Address address = addressRepository.findById(id)
                 .orElseThrow(() -> {
@@ -76,14 +79,17 @@ public class AddressService {
         Address saved = addressRepository.save(address);
 
         log.info("Endereço ID={} atualizado com sucesso.", id);
-        return saved;
+        return ObjectMapper.parseObject(saved, AddressDTO.class);
     }
 
     public void deleteAddress(Long id) {
         log.debug("Solicitada exclusão do endereço ID={}", id);
 
-        Address address = getAddressByIdOrThrow(id);
-
+        Address address = addressRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.warn("Endereço não encontrado com id: " + id);
+                    return new ResourceNotFoundException("Endereço não encontrado com id: " + id);
+                });
         addressRepository.delete(address);
 
         log.info("Endereço ID={} deletado com sucesso.", id);

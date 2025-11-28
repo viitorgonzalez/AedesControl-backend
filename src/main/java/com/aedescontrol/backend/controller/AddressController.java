@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
@@ -21,11 +22,9 @@ public class AddressController {
     private static final Logger log = LoggerFactory.getLogger(AddressController.class);
 
     private final AddressService addressService;
-    private final ObjectMapper mapper;
 
     public AddressController(AddressService addressService, ObjectMapper mapper) {
         this.addressService = addressService;
-        this.mapper = mapper;
     }
 
     @GetMapping
@@ -33,10 +32,7 @@ public class AddressController {
         long start = System.currentTimeMillis();
         log.info("GET /addresses - Início da requisição");
 
-        List<AddressDTO> result = ObjectMapper.parseList(
-                addressService.getAllAddresses(),
-                AddressDTO.class
-        );
+        List<AddressDTO> result = addressService.getAllAddresses();
 
         long elapsed = System.currentTimeMillis() - start;
         log.info("GET /addresses - Sucesso. {} endereços encontrados em {}ms", result.size(), elapsed);
@@ -49,12 +45,12 @@ public class AddressController {
         long start = System.currentTimeMillis();
         log.info("GET /addresses/{} - Início da requisição", id);
 
-        Address address = addressService.getAddressByIdOrThrow(id);
+        AddressDTO addressDto = addressService.getAddressByIdOrThrow(id);
 
         long elapsed = System.currentTimeMillis() - start;
         log.info("GET /addresses/{} - Concluído em {}ms", id, elapsed);
 
-        return ObjectMapper.parseObject(address, AddressDTO.class);
+        return addressDto;
     }
 
     @GetMapping("/status/{status}")
@@ -62,16 +58,17 @@ public class AddressController {
         long start = System.currentTimeMillis();
         log.info("GET /addresses/status/{} - Início da requisição", status);
 
-        Address.Status enumStatus = Address.Status.valueOf(status.toUpperCase());
-        List<AddressDTO> result = ObjectMapper.parseList(
-                addressService.getAddressesByStatus(enumStatus),
-                AddressDTO.class
-        );
+        Address.Status enumStatus;
+        try {
+            enumStatus = Address.Status.valueOf(status.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Status inválido: " + status);
+        }
 
         long elapsed = System.currentTimeMillis() - start;
         log.info("GET /addresses/status/{} - Concluído em {}ms", status, elapsed);
 
-        return result;
+        return addressService.getAddressesByStatus(enumStatus);
     }
 
     @PostMapping
@@ -79,14 +76,18 @@ public class AddressController {
         long start = System.currentTimeMillis();
         log.info("POST /addresses - Início da requisição, body recebido");
 
-        Address saved = addressService.saveAddress(dto);
-        AddressDTO savedDTO = ObjectMapper.parseObject(saved, AddressDTO.class);
+        AddressDTO saved = addressService.saveAddress(dto);
 
         long elapsed = System.currentTimeMillis() - start;
         log.info("POST /addresses - Endereço criado com ID={} em {}ms", saved.getId(), elapsed);
 
-        URI location = URI.create("/addresses/" + saved.getId());
-        return ResponseEntity.created(location).body(savedDTO);
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(saved.getId())
+                .toUri();
+
+        return ResponseEntity.created(location).body(saved);
     }
 
     @PutMapping("/{id}")
@@ -94,13 +95,12 @@ public class AddressController {
         long start = System.currentTimeMillis();
         log.info("PUT /addresses/{} - Início da requisição", id);
 
-        Address updated = addressService.updateAddress(dto, id);
-        AddressDTO updatedDTO = ObjectMapper.parseObject(updated, AddressDTO.class);
+        AddressDTO updatedDto = addressService.updateAddress(dto, id);
 
         long elapsed = System.currentTimeMillis() - start;
         log.info("PUT /addresses/{} - Atualização concluída em {}ms", id, elapsed);
 
-        return ResponseEntity.ok(updatedDTO);
+        return ResponseEntity.ok(updatedDto);
     }
 
     @DeleteMapping("/{id}")

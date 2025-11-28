@@ -1,6 +1,8 @@
 package com.aedescontrol.backend.dto;
 
+import com.aedescontrol.backend.config.StatusDeserializer;
 import com.aedescontrol.backend.model.Address;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.validation.constraints.*;
 
 public class CreateAddressDTO {
@@ -17,6 +19,8 @@ public class CreateAddressDTO {
     private String zipCode;
 
     @NotNull
+    @Pattern(regexp = "SUSPEITA|CONFIRMADO|LIVRE", message = "Status inválido")
+    @JsonDeserialize(using = StatusDeserializer.class)
     private Address.Status status;
 
     @DecimalMin(value = "-90.0", message = "Latitude must be >= -90")
