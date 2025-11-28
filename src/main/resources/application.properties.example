@@ -23,13 +23,11 @@ spring.flyway.baseline-on-migrate=true
 jwt.public.key=classpath:app.pub
 jwt.private.key=classpath:app.key
 
-logging.level.root=INFO
+# WARN in prod
+logging.level.root=DEBUG
 
-logging.level.com.aedescontrol.backend.service=DEBUG
-logging.level.com.aedescontrol.backend.controller=INFO
-
-logging.file.name=logs/app.log
-logging.file.path=logs/
+# logging.level.com.aedescontrol.backend.service=DEBUG
+# logging.level.com.aedescontrol.backend.controller=INFO
 
 logging.pattern.console=%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n
-logging.pattern.file=%d{yyyy-MM-dd HH:mm:ss} %-5level %logger - %msg%n
+
