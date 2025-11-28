@@ -2,7 +2,7 @@ package com.aedescontrol.backend.service;
 
 import com.aedescontrol.backend.dto.CreateAddressDTO;
 import com.aedescontrol.backend.exception.ResourceNotFoundException;
-import com.aedescontrol.backend.mapper.AddressMapper;
+import com.aedescontrol.backend.mapper.ObjectMapper;
 import com.aedescontrol.backend.model.Address;
 import com.aedescontrol.backend.repository.AddressRepository;
 import org.slf4j.Logger;
@@ -17,11 +17,9 @@ public class AddressService {
 
     private static final Logger log = LoggerFactory.getLogger(AddressService.class);
     private final AddressRepository addressRepository;
-    private final AddressMapper mapper;
 
-    public AddressService(AddressRepository addressRepository, AddressMapper mapper) {
+    public AddressService(AddressRepository addressRepository, ObjectMapper mapper) {
         this.addressRepository = addressRepository;
-        this.mapper = mapper;
     }
 
     public List<Address> getAllAddresses() {
@@ -56,7 +54,7 @@ public class AddressService {
 
     public Address saveAddress(CreateAddressDTO dto) {
         log.debug("Salvando endereço: body={}", dto);
-        Address address = mapper.toEntity(dto);
+        Address address = ObjectMapper.parseObject(dto, Address.class);
         log.debug("DTO convertido para entidade: {}", address);
 
         Address saved = addressRepository.save(address);
@@ -73,7 +71,7 @@ public class AddressService {
                 });
 
         log.debug("Dados recebidos para atualização: {}", dto);
-        mapper.updateEntity(address, dto);
+        ObjectMapper.updateObject(dto, address);
 
         Address saved = addressRepository.save(address);
 

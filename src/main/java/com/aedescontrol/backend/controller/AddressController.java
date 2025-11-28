@@ -2,7 +2,7 @@ package com.aedescontrol.backend.controller;
 
 import com.aedescontrol.backend.dto.AddressDTO;
 import com.aedescontrol.backend.dto.CreateAddressDTO;
-import com.aedescontrol.backend.mapper.AddressMapper;
+import com.aedescontrol.backend.mapper.ObjectMapper;
 import com.aedescontrol.backend.model.Address;
 import com.aedescontrol.backend.service.AddressService;
 import jakarta.validation.Valid;
@@ -21,9 +21,9 @@ public class AddressController {
     private static final Logger log = LoggerFactory.getLogger(AddressController.class);
 
     private final AddressService addressService;
-    private final AddressMapper mapper;
+    private final ObjectMapper mapper;
 
-    public AddressController(AddressService addressService, AddressMapper mapper) {
+    public AddressController(AddressService addressService, ObjectMapper mapper) {
         this.addressService = addressService;
         this.mapper = mapper;
     }
@@ -33,10 +33,10 @@ public class AddressController {
         long start = System.currentTimeMillis();
         log.info("GET /addresses - Início da requisição");
 
-        List<AddressDTO> result = addressService.getAllAddresses()
-                .stream()
-                .map(mapper::toDTO)
-                .toList();
+        List<AddressDTO> result = ObjectMapper.parseList(
+                addressService.getAllAddresses(),
+                AddressDTO.class
+        );
 
         long elapsed = System.currentTimeMillis() - start;
         log.info("GET /addresses - Sucesso. {} endereços encontrados em {}ms", result.size(), elapsed);
@@ -54,7 +54,7 @@ public class AddressController {
         long elapsed = System.currentTimeMillis() - start;
         log.info("GET /addresses/{} - Concluído em {}ms", id, elapsed);
 
-        return mapper.toDTO(address);
+        return ObjectMapper.parseObject(address, AddressDTO.class);
     }
 
     @GetMapping("/status/{status}")
@@ -63,10 +63,10 @@ public class AddressController {
         log.info("GET /addresses/status/{} - Início da requisição", status);
 
         Address.Status enumStatus = Address.Status.valueOf(status.toUpperCase());
-        List<AddressDTO> result = addressService.getAddressesByStatus(enumStatus)
-                .stream()
-                .map(mapper::toDTO)
-                .toList();
+        List<AddressDTO> result = ObjectMapper.parseList(
+                addressService.getAddressesByStatus(enumStatus),
+                AddressDTO.class
+        );
 
         long elapsed = System.currentTimeMillis() - start;
         log.info("GET /addresses/status/{} - Concluído em {}ms", status, elapsed);
@@ -80,7 +80,7 @@ public class AddressController {
         log.info("POST /addresses - Início da requisição, body recebido");
 
         Address saved = addressService.saveAddress(dto);
-        AddressDTO savedDTO = mapper.toDTO(saved);
+        AddressDTO savedDTO = ObjectMapper.parseObject(saved, AddressDTO.class);
 
         long elapsed = System.currentTimeMillis() - start;
         log.info("POST /addresses - Endereço criado com ID={} em {}ms", saved.getId(), elapsed);
@@ -95,7 +95,7 @@ public class AddressController {
         log.info("PUT /addresses/{} - Início da requisição", id);
 
         Address updated = addressService.updateAddress(dto, id);
-        AddressDTO updatedDTO = mapper.toDTO(updated);
+        AddressDTO updatedDTO = ObjectMapper.parseObject(updated, AddressDTO.class);
 
         long elapsed = System.currentTimeMillis() - start;
         log.info("PUT /addresses/{} - Atualização concluída em {}ms", id, elapsed);
