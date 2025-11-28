@@ -83,14 +83,12 @@ public class AddressService {
 
     public void deleteAddress(Long id) {
         log.debug("Solicitada exclusão do endereço ID={}", id);
-        long start = System.currentTimeMillis();
 
         Address address = getAddressByIdOrThrow(id);
 
         addressRepository.delete(address);
 
-        long elapsed = System.currentTimeMillis() - start;
-        log.info("Endereço ID={} deletado com sucesso em {}ms", id, elapsed);
+        log.info("Endereço ID={} deletado com sucesso.", id);
     }
 
 }
