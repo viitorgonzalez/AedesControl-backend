@@ -1,5 +1,6 @@
 package com.aedescontrol.backend.service;
 
+import com.aedescontrol.backend.dto.AddressDTO;
 import com.aedescontrol.backend.exception.ResourceNotFoundException;
 import com.aedescontrol.backend.mapper.ObjectMapper;
 import com.aedescontrol.backend.model.Address;
@@ -37,7 +38,7 @@ class AddressServiceTest {
 
         when(addressRepository.findAll()).thenReturn(List.of(a1, a2));
 
-        List<Address> result = addressService.getAllAddresses();
+        List<AddressDTO> result = addressService.getAllAddresses();
 
         assertEquals(2, result.size());
         assertEquals(1L, result.get(0).getId());
@@ -48,12 +49,12 @@ class AddressServiceTest {
     @Test
     @DisplayName("Should get address by id from DB and found")
     void getAddressByIdOrThrow_found() {
-        Address address = new Address();
-        address.setId(1L);
+        AddressDTO addressDto = new AddressDTO();
+        addressDto.setId(1L);
 
-        when(addressRepository.findById(1L)).thenReturn(Optional.of(address));
+        when(addressRepository.findById(1L)).thenReturn(Optional.of(addressDto));
 
-        Address result = addressService.getAddressByIdOrThrow(1L);
+        AddressDTO result = addressService.getAddressByIdOrThrow(1L);
         assertEquals(1L, result.getId());
     }
 

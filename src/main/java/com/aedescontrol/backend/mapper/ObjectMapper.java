@@ -16,7 +16,7 @@ public class ObjectMapper {
         return mapper.map(origin, destination);
     }
 
-    public static <O, D> List<D> parseList(List<O> originList, Class<D> destination) {
+    public static <O, D> List<D> parseListObjects(List<O> originList, Class<D> destination) {
         return originList.stream()
                 .map(o -> mapper.map(o, destination))
                 .collect(Collectors.toList());

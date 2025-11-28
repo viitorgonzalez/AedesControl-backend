@@ -1,14 +1,30 @@
 package com.aedescontrol.backend.dto;
 
+import com.aedescontrol.backend.config.StatusDeserializer;
 import com.aedescontrol.backend.model.Address.Status;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 
+@JsonDeserialize(using = StatusDeserializer.class)
 public class AddressDTO {
 
     private Long id;
+
+    @NotNull
     private String street;
+
+    @NotNull
     private String city;
+
+    @NotNull
     private String zipCode;
+
+    @NotNull
+    @Pattern(regexp = "SUSPEITA|CONFIRMADO|LIVRE", message = "Status inválido")
+    @JsonDeserialize(using = StatusDeserializer.class)
     private Status status;
+
     private Double latitude;
     private Double longitude;
 
