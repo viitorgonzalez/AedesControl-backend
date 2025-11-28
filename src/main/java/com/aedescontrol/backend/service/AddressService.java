@@ -26,19 +26,28 @@ public class AddressService {
 
     public Address getAddressByIdOrThrow(Long id) {
         return addressRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Address not found with id " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Endereço não encontrado com id: " + id));
     }
 
     public List<Address> getAddressesByStatus(Address.Status status) {
         List<Address> addresses = addressRepository.findByStatus(status);
 
         if (addresses.isEmpty())
-            throw new ResourceNotFoundException("Address not found with status " + status);
+            throw new ResourceNotFoundException("Endereço não encontrado com status: " + status);
         return addresses;
     }
 
     public Address saveAddress(CreateAddressDTO dto) {
         Address address = mapper.toEntity(dto);
+        return addressRepository.save(address);
+    }
+
+    public Address updateAddress(CreateAddressDTO dto, Long id) {
+        Address address = addressRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Endereço não encontrado com id: " + id));
+
+        mapper.updateEntity(address, dto);
+
         return addressRepository.save(address);
     }
 

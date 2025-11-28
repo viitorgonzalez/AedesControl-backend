@@ -58,6 +58,13 @@ public class AddressController {
                 .body(savedDTO);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<AddressDTO> updateAddress(@RequestBody @Valid CreateAddressDTO dto, @PathVariable Long id) {
+        Address address = addressService.updateAddress(dto, id);
+        AddressDTO addressDTO = mapper.toDTO(address);
+        return ResponseEntity.ok(addressDTO);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAddress(@PathVariable Long id) {
         addressService.deleteAddress(id);
