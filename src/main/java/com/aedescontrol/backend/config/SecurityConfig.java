@@ -30,16 +30,15 @@ import java.util.List;
 @Configuration
 public class SecurityConfig {
 
+    @Value("${jwt.public.key}")
+    private RSAPublicKey publicKey;
+    @Value("${jwt.private.key}")
+    private RSAPrivateKey privateKey;
+
     @Bean
     public JwtCookieFilter jwtCookieFilter(JwtDecoder jwtDecoder) {
         return new JwtCookieFilter(jwtDecoder);
     }
-
-    @Value("${jwt.public.key}")
-    private RSAPublicKey publicKey;
-
-    @Value("${jwt.private.key}")
-    private RSAPrivateKey privateKey;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtCookieFilter jwtCookieFilter) throws Exception {
