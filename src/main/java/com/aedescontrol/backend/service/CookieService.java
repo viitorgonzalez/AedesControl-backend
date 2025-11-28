@@ -12,7 +12,7 @@ public class CookieService {
 
     private static final String TOKEN_COOKIE = "token";
 
-    private static final Logger log = LoggerFactory.getLogger(AddressService.class);
+    private static final Logger log = LoggerFactory.getLogger(CookieService.class);
 
     public static void setCookie(HttpServletResponse response, String key, String value, int seconds) {
         log.debug("Criando cookie: key='{}', maxAge={} segundos, httpOnly=true, path='/'", key, seconds);
@@ -29,7 +29,7 @@ public class CookieService {
         if (request.getCookies() == null) {
             log.warn("Nenhum cookie presente na requisição. Cookie key={} não encontrado.", key);
             return null;
-        };
+        }
 
         return Arrays.stream(request.getCookies())
                 .filter(cookie -> key.equals(cookie.getName()))
