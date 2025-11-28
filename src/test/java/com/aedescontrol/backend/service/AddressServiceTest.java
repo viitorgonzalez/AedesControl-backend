@@ -1,10 +1,9 @@
 package com.aedescontrol.backend.service;
 
 import com.aedescontrol.backend.exception.ResourceNotFoundException;
-import com.aedescontrol.backend.mapper.AddressMapper;
+import com.aedescontrol.backend.mapper.ObjectMapper;
 import com.aedescontrol.backend.model.Address;
 import com.aedescontrol.backend.repository.AddressRepository;
-import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,13 +17,13 @@ import static org.mockito.Mockito.*;
 class AddressServiceTest {
 
     private AddressRepository addressRepository;
-    private AddressMapper mapper;
+    private ObjectMapper mapper;
     private AddressService addressService;
 
     @BeforeEach
     void setup() {
         addressRepository = mock(AddressRepository.class);
-        mapper = mock(AddressMapper.class);
+        mapper = mock(ObjectMapper.class);
         addressService = new AddressService(addressRepository, mapper);
     }
 
