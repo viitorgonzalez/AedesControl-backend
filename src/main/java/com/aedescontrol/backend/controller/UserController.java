@@ -51,6 +51,8 @@ public class UserController {
         var claims = JwtClaimsSet.builder()
                 .issuer("AedesControlBackend")
                 .subject(user.getId().toString())
+                .claim("userName", user.getUserName())
+                .claim("email", user.getEmail())
                 .issuedAt(now).expiresAt(now.plusSeconds(expiresIn)).build();
 
         String jwtToken = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
@@ -82,7 +84,7 @@ public class UserController {
 
         UserDTO userDto = new UserDTO();
         userDto.setId(UUID.fromString(jwt.getSubject()));
-        userDto.setUserName(jwt.getClaimAsString("name"));
+        userDto.setUserName(jwt.getClaimAsString("userName"));
         userDto.setEmail(jwt.getClaimAsString("email"));
 
         return ResponseEntity.ok(userDto);
