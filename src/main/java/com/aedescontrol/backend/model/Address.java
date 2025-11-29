@@ -48,7 +48,7 @@ public class Address {
     public Address() {
     }
 
-    public Address(AddressDTO dto) {
+    public Address(AddressDTO dto, String s, String cidade, String string, Status livre, double v, double v1) {
         this.street = dto.getStreet();
         this.city = dto.getCity();
         this.zipCode = dto.getZipCode();
