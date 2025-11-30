@@ -63,7 +63,3 @@ mvn jacoco:report
 ## Configuração
 
 Edite o arquivo src/main/resources/application.yaml para configurar o PostGreSQL de acordo com o exemplo application.yaml.example
-
-# JPA
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
