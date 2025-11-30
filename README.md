@@ -56,10 +56,6 @@ docker-compose down
 mvn test
 ```
 
-# Executar testes com cobertura
-```
-mvn jacoco:report
-```
 ## Configuração
 
 Edite o arquivo src/main/resources/application.yaml para configurar o PostGreSQL de acordo com o exemplo application.yaml.example
