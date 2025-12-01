@@ -1,43 +1,36 @@
 package com.aedescontrol.backend.dto;
 
 import com.aedescontrol.backend.config.StatusDeserializer;
-import com.aedescontrol.backend.model.Address;
+import com.aedescontrol.backend.model.Address.Status;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 
 public class CreateAddressDTO {
 
-    @NotBlank
-    @Size(max = 255)
+    @NotNull
     private String street;
 
-    @NotBlank
-    private String city;
+    @NotNull
+    private String number;
 
-    @NotBlank
-    @Pattern(regexp = "\\d{5}-\\d{3}", message = "CEP must be in the format 12345-678")
+    private String complement;
+
+    @NotNull
+    private Long neighborhoodId;
+
+    @NotNull
     private String zipCode;
+
+    private String referencePoint;
 
     @NotNull
     @Pattern(regexp = "SUSPEITA|CONFIRMADO|LIVRE", message = "Status inválido")
     @JsonDeserialize(using = StatusDeserializer.class)
-    private Address.Status status;
+    private Status status;
 
-    @DecimalMin(value = "-90.0", message = "Latitude must be >= -90")
-    @DecimalMax(value = "90.0", message = "Latitude must be <= 90")
     private Double latitude;
-
-    @DecimalMin(value = "-180.0", message = "Longitude must be >= -180")
-    @DecimalMax(value = "180.0", message = "Longitude must be <= 180")
     private Double longitude;
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
 
     public String getStreet() {
         return street;
@@ -47,12 +40,28 @@ public class CreateAddressDTO {
         this.street = street;
     }
 
-    public Address.Status getStatus() {
-        return status;
+    public String getNumber() {
+        return number;
     }
 
-    public void setStatus(Address.Status status) {
-        this.status = status;
+    public void setNumber(String number) {
+        this.number = number;
+    }
+
+    public String getComplement() {
+        return complement;
+    }
+
+    public void setComplement(String complement) {
+        this.complement = complement;
+    }
+
+    public Long getNeighborhoodId() {
+        return neighborhoodId;
+    }
+
+    public void setNeighborhoodId(Long neighborhoodId) {
+        this.neighborhoodId = neighborhoodId;
     }
 
     public String getZipCode() {
@@ -61,6 +70,22 @@ public class CreateAddressDTO {
 
     public void setZipCode(String zipCode) {
         this.zipCode = zipCode;
+    }
+
+    public String getReferencePoint() {
+        return referencePoint;
+    }
+
+    public void setReferencePoint(String referencePoint) {
+        this.referencePoint = referencePoint;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     public Double getLatitude() {

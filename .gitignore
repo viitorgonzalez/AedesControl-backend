@@ -55,7 +55,7 @@ dist/
 # Ignore rsa public and private keys
 src/main/resources/*.key
 src/main/resources/*.pub
-src/main/resources/application.properties
-!src/main/resources/application.properties.example
+src/main/resources/application.yaml
+!src/main/resources/application.yaml.example
 
-docker-compose.yml
+docker-compose.yaml

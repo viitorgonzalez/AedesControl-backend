@@ -1,6 +1,7 @@
 package com.aedescontrol.backend.model;
 
 import com.aedescontrol.backend.dto.LoginRequest;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -23,11 +24,10 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
-    private String city;
-
-    @Column(nullable = false)
-    private String state;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "city_id", nullable = false)
+    @JsonIgnore
+    private City city;
 
     public UUID getId() {
         return userId;
@@ -45,19 +45,11 @@ public class User {
         this.email = email;
     }
 
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-    }
-
-    public String getCity() {
+    public City getCity() {
         return city;
     }
 
-    public void setCity(String city) {
+    public void setCity(City city) {
         this.city = city;
     }
 

@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: backend
+
+  datasource:
+    url: jdbc:postgresql://<HOST>:<PORT>/<DB_NAME>
+    username: <DB_USER>
+    password: <DB_PASSWORD>
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    open-in-view: false
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+
+jwt:
+  public:
+    key: classpath:<PUBLIC_KEY_FILE>
+  private:
+    key: classpath:<PRIVATE_KEY_FILE>
+
+logging:
+  level:
+    root: DEBUG // WARN in prod
+    # com.aedescontrol.backend.service: DEBUG
+    # com.aedescontrol.backend.controller: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"

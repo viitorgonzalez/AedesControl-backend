@@ -2,6 +2,7 @@ package com.aedescontrol.backend.model;
 
 import com.aedescontrol.backend.config.StatusDeserializer;
 import com.aedescontrol.backend.dto.AddressDTO;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -17,14 +18,25 @@ public class Address {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "street", nullable = false, length = 255)
+    @Column(name = "street", nullable = false)
     private String street;
 
-    @Column(name = "city", nullable = false, length = 50)
-    private String city;
+    @Column(name = "number", length = 10)
+    private String number;
 
-    @Column(name = "zipCode", nullable = false, length = 9)
+    @Column(name = "complement", length = 100)
+    private String complement;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "neighborhood_id", nullable = false)
+    @JsonIgnore
+    private Neighborhood neighborhood;
+
+    @Column(name = "zip_code", length = 9)
     private String zipCode;
+
+    @Column(name = "reference_point")
+    private String referencePoint;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
@@ -48,13 +60,15 @@ public class Address {
     public Address() {
     }
 
-    public Address(AddressDTO dto, String s, String cidade, String string, Status livre, double v, double v1) {
+    public Address(AddressDTO dto) {
         this.street = dto.getStreet();
-        this.city = dto.getCity();
+        this.number = dto.getNumber();
+        this.complement = dto.getComplement();
         this.zipCode = dto.getZipCode();
         this.status = dto.getStatus();
         this.latitude = dto.getLatitude();
         this.longitude = dto.getLongitude();
+        this.referencePoint = dto.getReferencePoint();
     }
 
     public Long getId() {
@@ -73,12 +87,28 @@ public class Address {
         this.street = street;
     }
 
-    public String getCity() {
-        return city;
+    public String getNumber() {
+        return number;
     }
 
-    public void setCity(String city) {
-        this.city = city;
+    public void setNumber(String number) {
+        this.number = number;
+    }
+
+    public String getComplement() {
+        return complement;
+    }
+
+    public void setComplement(String complement) {
+        this.complement = complement;
+    }
+
+    public Neighborhood getNeighborhood() {
+        return neighborhood;
+    }
+
+    public void setNeighborhood(Neighborhood neighborhood) {
+        this.neighborhood = neighborhood;
     }
 
     public String getZipCode() {
@@ -87,6 +117,14 @@ public class Address {
 
     public void setZipCode(String zipCode) {
         this.zipCode = zipCode;
+    }
+
+    public String getReferencePoint() {
+        return referencePoint;
+    }
+
+    public void setReferencePoint(String referencePoint) {
+        this.referencePoint = referencePoint;
     }
 
     public Status getStatus() {
@@ -117,16 +155,8 @@ public class Address {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     public enum Status {
