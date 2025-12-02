@@ -40,9 +40,6 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody @Valid LoginRequest loginRequest, HttpServletResponse response) {
-        long start = System.currentTimeMillis();
-        log.info("POST /auth/login - Início da requisição, email={}", loginRequest.email());
-
         try {
             User user = userRepository.findByEmail(loginRequest.email())
                     .orElseThrow(() -> new BadCredentialsException("email ou senha inválida!"));
@@ -64,48 +61,30 @@ public class UserController {
 
             String jwtToken = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
             CookieService.setCookie(response, "token", jwtToken, 300);
-
-            long elapsed = System.currentTimeMillis() - start;
-            log.info("POST /auth/login - Login bem-sucedido para userId={} em {}ms", user.getId(), elapsed);
             return ResponseEntity.ok().build();
 
         } catch (BadCredentialsException e) {
-            long elapsed = System.currentTimeMillis() - start;
-            log.warn("POST /auth/login - Falha no login para email={} em {}ms: {}", loginRequest.email(), elapsed, e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
-            long elapsed = System.currentTimeMillis() - start;
-            log.error("POST /auth/login - Erro inesperado em {}ms", elapsed, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response) {
-        long start = System.currentTimeMillis();
-        log.info("POST /auth/logout - Início da requisição");
-
         try {
             CookieService.clearTokenCookie(response);
-            long elapsed = System.currentTimeMillis() - start;
-            log.info("POST /auth/logout - Logout concluído em {}ms", elapsed);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
-            long elapsed = System.currentTimeMillis() - start;
-            log.error("POST /auth/logout - Erro inesperado em {}ms", elapsed, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
     @GetMapping("/me")
     public ResponseEntity<UserDTO> me(HttpServletRequest request) {
-        long start = System.currentTimeMillis();
-        log.info("GET /auth/me - Início da requisição");
-
         try {
             String token = CookieService.getCookie(request, "token");
             if (token == null) {
-                log.warn("GET /auth/me - Token não encontrado");
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
 
@@ -113,7 +92,6 @@ public class UserController {
             try {
                 jwt = jwtDecoder.decode(token);
             } catch (JwtException e) {
-                log.warn("GET /auth/me - Token inválido: {}", e.getMessage());
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
 
@@ -122,13 +100,8 @@ public class UserController {
             userDto.setUserName(jwt.getClaimAsString("userName"));
             userDto.setEmail(jwt.getClaimAsString("email"));
 
-            long elapsed = System.currentTimeMillis() - start;
-            log.info("GET /auth/me - Sucesso para userId={} em {}ms", userDto.getId(), elapsed);
-
             return ResponseEntity.ok(userDto);
         } catch (Exception e) {
-            long elapsed = System.currentTimeMillis() - start;
-            log.error("GET /auth/me - Erro inesperado em {}ms", elapsed, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

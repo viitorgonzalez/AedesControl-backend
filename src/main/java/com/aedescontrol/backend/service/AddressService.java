@@ -24,7 +24,7 @@ public class AddressService {
     }
 
     public List<AddressDTO> getAllAddresses() {
-        log.debug("Finding all addresses");
+        log.debug("Procurando todos os endereços");
         return ObjectMapper.parseListObjects(addressRepository.findAll(), AddressDTO.class); // to-do: Pageable
     }
 
