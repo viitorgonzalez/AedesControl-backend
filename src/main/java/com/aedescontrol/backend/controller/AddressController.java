@@ -19,8 +19,6 @@ import java.util.List;
 @RequestMapping("/addresses")
 public class AddressController {
 
-    private static final Logger log = LoggerFactory.getLogger(AddressController.class);
-
     private final AddressService addressService;
 
     public AddressController(AddressService addressService, ObjectMapper mapper) {
@@ -29,57 +27,28 @@ public class AddressController {
 
     @GetMapping
     public List<AddressDTO> getAllAddresses() {
-        long start = System.currentTimeMillis();
-        log.info("GET /addresses - Início da requisição");
-
-        List<AddressDTO> result = addressService.getAllAddresses();
-
-        long elapsed = System.currentTimeMillis() - start;
-        log.info("GET /addresses - Sucesso. {} endereços encontrados em {}ms", result.size(), elapsed);
-
-        return result;
+        return addressService.getAllAddresses();
     }
 
     @GetMapping("/{id}")
     public AddressDTO getAddressById(@PathVariable Long id) {
-        long start = System.currentTimeMillis();
-        log.info("GET /addresses/{} - Início da requisição", id);
-
-        AddressDTO addressDto = addressService.getAddressByIdOrThrow(id);
-
-        long elapsed = System.currentTimeMillis() - start;
-        log.info("GET /addresses/{} - Concluído em {}ms", id, elapsed);
-
-        return addressDto;
+        return addressService.getAddressByIdOrThrow(id);
     }
 
     @GetMapping("/status/{status}")
     public List<AddressDTO> getAddressesByStatus(@PathVariable String status) {
-        long start = System.currentTimeMillis();
-        log.info("GET /addresses/status/{} - Início da requisição", status);
-
         Address.Status enumStatus;
         try {
             enumStatus = Address.Status.valueOf(status.toUpperCase());
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Status inválido: " + status);
         }
-
-        long elapsed = System.currentTimeMillis() - start;
-        log.info("GET /addresses/status/{} - Concluído em {}ms", status, elapsed);
-
         return addressService.getAddressesByStatus(enumStatus);
     }
 
     @PostMapping
     public ResponseEntity<AddressDTO> createAddress(@RequestBody @Valid CreateAddressDTO dto) {
-        long start = System.currentTimeMillis();
-        log.info("POST /addresses - Início da requisição, body recebido");
-
         AddressDTO saved = addressService.saveAddress(dto);
-
-        long elapsed = System.currentTimeMillis() - start;
-        log.info("POST /addresses - Endereço criado com ID={} em {}ms", saved.getId(), elapsed);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -92,27 +61,13 @@ public class AddressController {
 
     @PutMapping("/{id}")
     public ResponseEntity<AddressDTO> updateAddress(@RequestBody @Valid CreateAddressDTO dto, @PathVariable Long id) {
-        long start = System.currentTimeMillis();
-        log.info("PUT /addresses/{} - Início da requisição", id);
-
         AddressDTO updatedDto = addressService.updateAddress(dto, id);
-
-        long elapsed = System.currentTimeMillis() - start;
-        log.info("PUT /addresses/{} - Atualização concluída em {}ms", id, elapsed);
-
         return ResponseEntity.ok(updatedDto);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAddress(@PathVariable Long id) {
-        long start = System.currentTimeMillis();
-        log.info("DELETE /addresses/{} - Início da requisição", id);
-
         addressService.deleteAddress(id);
-
-        long elapsed = System.currentTimeMillis() - start;
-        log.info("DELETE /addresses/{} - Exclusão concluída em {}ms", id, elapsed);
-
         return ResponseEntity.noContent().build();
     }
 }
